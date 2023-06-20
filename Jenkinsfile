@@ -34,7 +34,7 @@ pipeline {
              sshagent (['ssh-aws']){
                 sh 'scp -o StrictHostKeyChecking=no docker-compose.yml $EC2:/home/ec2-user'
                 sh 'ssh $EC2 ls -lrt'
-                //sh 'ssh $EC2 docker-compose up -d'
+                sh 'ssh $EC2 docker-compose up -d'
              }
             }
         }
