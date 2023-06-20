@@ -10,21 +10,24 @@ pipeline {
         APPNAME = "jenkins-node-demo"
     }
     stages {
-        stage('Check AWS') {
+        stage('Check Version') {
             steps {
-                sh 'aws sts get-caller-identity'
+                sh '''
+                VERSION=$(jq --raw-output .version package.json)
+                echo $VERSION >version.txt
+                '''
             }
         }
         stage('Docker Build') {
             steps {
-               sh 'docker build -t $REGISTRY/$APPNAME .'
+               sh 'docker build -t $REGISTRY/$APPNAME:$(cat version.txt) .'
             }
         }
         stage('Docker Push') {
             steps {
                sh '''
                docker login --username=$DOCKER_HUB_LOGIN_USR --password=$DOCKER_HUB_LOGIN_PSW
-               docker push $REGISTRY/$APPNAME
+               docker push $REGISTRY/$APPNAME:$(cat version.txt)
                '''
             }
         }
