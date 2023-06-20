@@ -1,0 +1,21 @@
+version: '3'
+services:
+  back:
+    container_name: python_app
+    image: REGISTRY/IMAGEAPP:VERSION
+    ports:
+      - "5000:5000"
+    restart: always
+    networks:
+      - python  
+  
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - python     
+
+networks:
+  python:
+    driver: bridge
