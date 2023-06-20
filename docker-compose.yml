@@ -1,0 +1,8 @@
+version: '3'
+services:
+  back:
+    container_name: IMAGENAME
+    image: REGISTRY/APPNAME:TAG
+    ports:
+      - "4000:4000"
+    restart: always
