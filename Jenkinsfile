@@ -5,9 +5,11 @@ pipeline {
         AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
        // AWS_SESSION_TOKEN = credentials('AWS_SESSION_TOKEN')
         DOCKER_HUB_LOGIN = credentials('docker-hub')
+        BOT_URL = credentials('telegran')
+        TELEGRAM_CHAT_ID = "-1001508340482"
         REGISTRY = "roxsross12"
         APPNAME = "jenkinspy"
-        VERSION = "1.0.1"
+        VERSION = "1.0.2"
         EC2 = "ec2-user@44.211.221.9"
     }
     stages {
@@ -38,5 +40,20 @@ pipeline {
              }
             }
         }
+    } //end stage
+    post {
+        always {
+            cleanWS()
+        }
+      success {
+         sh  "curl -s -X POST $BOT_URL -d chat_id=${TELEGRAM_CHAT_ID} -d parse_mode=markdown -d text='*Full project name*: ${env.JOB_NAME} \n*Branch*: [$GIT_BRANCH]($GIT_URL) \n*Build* : [OK])'"
+      } 
+      failure {
+
+        sh  "curl -s -X POST $BOT_URL -d chat_id=${TELEGRAM_CHAT_ID} -d parse_mode=markdown -d text='*Full project name*: ${env.JOB_NAME} \n*Branch*: [$GIT_BRANCH]($GIT_URL) \n*Build* : [NOT OK])'"
+
+      } 
     }
-}
+
+
+} //end pipeline
