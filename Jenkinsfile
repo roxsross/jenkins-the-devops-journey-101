@@ -10,6 +10,28 @@ pipeline {
         APPNAME = "jenkins-node-demo"
     }
     stages {
+        stage('init') {
+            agent {
+                docker {
+                    image 'node:alpine'
+                    args '-u root:root'
+                }
+            }
+            steps {
+                sh 'npm install'
+            }
+        }
+        stage('test') {
+            agent {
+                docker {
+                    image 'node:alpine'
+                    args '-u root:root'
+                }
+            }
+            steps {
+                sh 'npm run test'
+            }
+        }
         stage('Check Version') {
             steps {
                 sh '''
