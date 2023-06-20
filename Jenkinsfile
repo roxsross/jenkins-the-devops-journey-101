@@ -20,7 +20,7 @@ pipeline {
         }
         stage('List Objets S3') {
             steps {
-               sh 'aws s3 ls . s3://$BUCKET'
+               sh 'aws s3 ls s3://$BUCKET'
             }
         }
     }
