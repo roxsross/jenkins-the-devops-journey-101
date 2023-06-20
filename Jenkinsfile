@@ -7,7 +7,7 @@ pipeline {
         DOCKER_HUB_LOGIN = credentials('docker-hub')
         REGISTRY = "roxsross12"
         APPNAME = "jenkinspy"
-        VERSION = "1.0.0"
+        VERSION = "1.0.1"
         EC2 = "ec2-user@44.211.221.9"
     }
     stages {
