@@ -25,6 +25,7 @@ pipeline {
                docker push $REGISTRY/$APPNAME:$VERSION
                '''
             }
+        }
         stage('Deploy to ec2') {
             steps {
                 echo "===DEPLOY TO EC2"
