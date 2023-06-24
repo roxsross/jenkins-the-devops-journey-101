@@ -43,7 +43,7 @@ pipeline {
         }  
         stage('Deploy to s3') {
             steps {
-                untash 'dist'
+                unstash 'dist'
                 sh 'aws s3 sync dist/. s3://$BUCKET --exclude ".git/*"'
             }
         }
