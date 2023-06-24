@@ -16,7 +16,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh '''
-                docker build  $REGISTRY/$APPNAME:$VERSION .
+                docker build -t  $REGISTRY/$APPNAME:$VERSION .
                    '''  
             }
         }  
