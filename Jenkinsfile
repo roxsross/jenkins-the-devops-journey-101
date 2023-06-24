@@ -33,13 +33,19 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'docker build $REGISTRY/$APPNAME .'  
+                sh '''
+                VERSION=$(jq --raw-output .version package.json)
+                docker build -t $REGISTRY/$APPNAME:$VERSION .
+                   '''  
             }
         }  
         stage('Push to DockerHub') {
             steps {
-               sh 'docker login --username=$DOCKER_HUB_LOGIN_USR --password=$DOCKER_HUB_LOGIN_PSW'
-               sh 'docker push $REGISTRY/$APPNAME'
+               sh '''
+               docker login --username=$DOCKER_HUB_LOGIN_USR --password=$DOCKER_HUB_LOGIN_PSW
+               VERSION=$(jq --raw-output .version package.json)
+               docker push $REGISTRY/$APPNAME
+               '''
             }
         }
     } //end stages
