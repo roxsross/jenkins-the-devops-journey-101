@@ -44,7 +44,7 @@ pipeline {
                sh '''
                docker login --username=$DOCKER_HUB_LOGIN_USR --password=$DOCKER_HUB_LOGIN_PSW
                VERSION=$(jq --raw-output .version package.json)
-               docker push $REGISTRY/$APPNAME
+               docker push $REGISTRY/$APPNAME:$VERSION
                '''
             }
         }
