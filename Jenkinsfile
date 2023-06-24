@@ -9,6 +9,8 @@ pipeline {
         APPNAME="py-app"
         VERSION="1.0.0"
         EC2="ec2-user@184.73.89.92"
+        BOT_URL = credentials('BOT_URL')
+        TELEGRAM_CHAT_ID="-1001508340482"
             }
     stages {
         stage('Build') {
@@ -34,12 +36,18 @@ pipeline {
                 sh ("sed -i -- 's/VERSION/$VERSION/g' docker-compose.yml")
                 sshagent (['ssh-aws']){
                     sh 'scp -o StrictHostKeyChecking=no docker-compose.yml $EC2:/home/ec2-user'
-                    sh 'ssh $EC2 ls -lrt'
-                    sh 'ssh $EC2 cat docker-compose.yml'
-                   // sh 'ssh $EC2 docker-compose up -d'
+                    sh 'ssh $EC2 docker-compose up -d'
                 }
 
             }            
         }
     } //end stages
+    post {
+        success{
+              sh  "curl -s -X POST $BOT_URL -d chat_id=${TELEGRAM_CHAT_ID} -d parse_mode=markdown -d text='*Full project name*: ${env.JOB_NAME} \n*Branch*: [$GIT_BRANCH]($GIT_URL) \n*Build* : [OK])'"
+        }
+        failure{
+              sh  "curl -s -X POST $BOT_URL -d chat_id=${TELEGRAM_CHAT_ID} -d parse_mode=markdown -d text='*Full project name*: ${env.JOB_NAME} \n*Branch*: [$GIT_BRANCH]($GIT_URL) \n*Build* : [NOK])'"
+        }
+    }
 }//end pipeline
