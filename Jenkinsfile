@@ -9,28 +9,28 @@ pipeline {
         FARADAY_PASS = credentials('FARADAY_PASS')
             }
     stages {
-        // stage('Init') {
-        //     agent {
-        //         docker {
-        //             image 'node:erbium-alpine'
-        //             args '-u root:root'
-        //         }
-        //     }
-        //     steps {
-        //         sh 'npm install'
-        //     }
-        // } 
-        // stage('test') {
-        //     agent {
-        //         docker {
-        //             image 'node:erbium-alpine'
-        //             args '-u root:root'
-        //         }
-        //     }
-        //     steps {
-        //         sh 'npm run test'
-        //     }
-        // }
+        stage('Init') {
+            agent {
+                docker {
+                    image 'node:erbium-alpine'
+                    args '-u root:root'
+                }
+            }
+            steps {
+                sh 'npm install'
+            }
+        } 
+        stage('test') {
+            agent {
+                docker {
+                    image 'node:erbium-alpine'
+                    args '-u root:root'
+                }
+            }
+            steps {
+                sh 'npm run test'
+            }
+        }
 
         stage('Security Sast') {
             parallel {
