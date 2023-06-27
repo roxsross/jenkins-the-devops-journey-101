@@ -6,6 +6,7 @@ pipeline {
         DOCKER_HUB_LOGIN = credentials('docker-hub')
         REGISTRY="roxsross12"
         APPNAME="node-app"
+        FARADAY_PASS = credentials('FARADAY_PASS')
             }
     stages {
         // stage('Init') {
@@ -82,6 +83,8 @@ pipeline {
                             docker build -t $APPNAME .
                             curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b . v0.42.1
                             ./trivy image --format json --output trivy-report.json $APPNAME
+                            echo ${WORKSPACE}
+                            docker run --rm -v $(pwd):/${WORKSPACE} -e "HOST=https://faraday.295devops.com" -e "USERNAME=faraday" -e "PASSWORD=$FARADAY_PASS" -e "WORKSPACE=devsecops-$BUILD_NUMBER" -e "FILE=trivy-report.json" roxsross12/faraday-uploader:1.0.0 
                         '''
                     }
                 }
@@ -131,8 +134,7 @@ pipeline {
                             -f openapi \
                             -I \
                             -r reports/testreport.html \
-                            -x reports/testreport.xml \
-                            -J reports/testreport.json
+                            -x reports/testreport.xml 
                     """
                     if (result > 0) {
                         unstable(message: "OWASP ZAP issues found")
