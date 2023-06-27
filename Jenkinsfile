@@ -108,9 +108,7 @@ pipeline {
 
         stage('DEPLOY') {
             steps {
-               sh '''
-               echo "deploy
-               '''
+               echo "hola"
             }
         }
 
