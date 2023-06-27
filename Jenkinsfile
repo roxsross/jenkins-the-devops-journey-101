@@ -51,7 +51,18 @@ pipeline {
                 }
                 stage('audit') {
                     steps {
-                        echo "1"
+                        script {
+                            docker.image('node:erbium-alpine').inside("--entrypoint=''"){
+                                try {
+                                    sh '''
+                                        npm audit --registry=https://registry.npmjs.org -audit-level=moderate --json > report_npmaudit.json
+                                    '''
+
+                                } catch (err){
+                                    throw err
+                                }
+                            }
+                       }
                     }
                 }
             }
