@@ -49,7 +49,7 @@ pipeline {
                        }
                     }
                 }
-                stage('audit') {
+                stage('Npm Audit') {
                     steps {
                         script {
                             docker.image('node:erbium-alpine').inside("--entrypoint=''"){
@@ -63,6 +63,26 @@ pipeline {
                                 }
                             }
                        }
+                    }
+                }
+            }
+        } //end parallel 
+
+        stage('Security Container') {
+            parallel {
+                stage('Hadolint') {
+                    steps {
+                        sh 'docker run --rm -i hadolint/hadolint < Dockerfile'
+                    }
+                }
+                stage('Trivy Scan') {
+                    steps {
+                        sh '''
+                            
+                            docker build -t $APPNAME .
+                            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b . v0.42.1
+                            ./trivy image --format json --output trivy-report.json $APPNAME
+                        '''
                     }
                 }
             }
