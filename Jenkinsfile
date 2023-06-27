@@ -85,7 +85,7 @@ pipeline {
                             ./trivy image --format json --output trivy-report.json $APPNAME
                             echo ${WORKSPACE}
                             ls -lrt
-                            docker run --rm -v $(pwd):/pipeline-devsecops -e "HOST=https://faraday.295devops.com" -e "USERNAME=faraday" -e "PASSWORD=$FARADAY_PASS" -e "WORKSPACE=devsecops-$BUILD_NUMBER" -e "FILES=trivy-report.json" roxsross12/faraday-uploader:1.0.0 
+                            docker run --rm -v $(pwd):/pipeline-devsecops -e "HOST=https://faraday.295devops.com" -e "USERNAME=faraday" -e "PASSWORD=$FARADAY_PASS" -e "WORKSPACE=devsecops-$BUILD_NUMBER" -e "FILES=pipeline-devsecops/trivy-report.json" roxsross12/faraday-uploader:1.0.0 
                         '''
                     }
                 }
