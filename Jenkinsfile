@@ -33,9 +33,20 @@ pipeline {
 
         stage('Security Sast') {
             parallel {
-                stage('Secret') {
+                stage('Horusec-Secret') {
                     steps {
-                       echo "1"
+                       script {
+                            docker.image('horuszup/horusec-cli:latest').inside("--entrypoint=''"){
+                                try {
+                                    sh '''
+                                        horusec start ./ --disable-docker="true" -o="json" -O="./horusec.json"
+                                    '''
+
+                                } catch (err){
+                                    throw err
+                                }
+                            }
+                       }
                     }
                 }
                 stage('audit') {
