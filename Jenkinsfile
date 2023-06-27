@@ -88,23 +88,61 @@ pipeline {
             }
         } //end parallel 
 
+        stage('Build') {
+            steps {
+                sh '''
+                VERSION=$(jq --raw-output .version package.json)
+                docker build -t $REGISTRY/$APPNAME:$VERSION .
+                   '''  
+            }
+        }  
+        stage('Push to DockerHub') {
+            steps {
+               sh '''
+               docker login --username=$DOCKER_HUB_LOGIN_USR --password=$DOCKER_HUB_LOGIN_PSW
+               VERSION=$(jq --raw-output .version package.json)
+               docker push $REGISTRY/$APPNAME:$VERSION
+               '''
+            }
+        }
 
-    //     stage('Build') {
-    //         steps {
-    //             sh '''
-    //             VERSION=$(jq --raw-output .version package.json)
-    //             docker build -t $REGISTRY/$APPNAME:$VERSION .
-    //                '''  
-    //         }
-    //     }  
-    //     stage('Push to DockerHub') {
-    //         steps {
-    //            sh '''
-    //            docker login --username=$DOCKER_HUB_LOGIN_USR --password=$DOCKER_HUB_LOGIN_PSW
-    //            VERSION=$(jq --raw-output .version package.json)
-    //            docker push $REGISTRY/$APPNAME:$VERSION
-    //            '''
-    //         }
-    //     }
+        stage('DEPLOY') {
+            steps {
+               sh '''
+               echo "deploy
+               '''
+            }
+        }
+
+        stage('DAST') {
+            agent {
+                docker {
+                    image "owasp/zap2docker-weekly"
+                    args "--volume ${WORKSPACE}:/zap/wrk"        
+                    }
+            }
+            steps {
+                script {
+                    def result = sh label: "OWASP ZAP", returnStatus: true,
+                        script: """\
+                            mkdir -p reports &>/dev/null
+                            zap-api-scan.py \
+                            -t "https://petstore3.swagger.io/api/v3/openapi.json" \
+                            -m 1 \
+                            -d \
+                            -f openapi \
+                            -I \
+                            -r reports/testreport.html \
+                            -x reports/testreport.xml \
+                            -J reports/testreport.json
+                    """
+                    if (result > 0) {
+                        unstable(message: "OWASP ZAP issues found")
+                    }   
+                }
+            }
+        }
+
+
      } //end stages
 }//end pipeline
