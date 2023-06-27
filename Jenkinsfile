@@ -39,7 +39,7 @@ pipeline {
                             docker.image('horuszup/horusec-cli:latest').inside("--entrypoint=''"){
                                 try {
                                     sh '''
-                                        horusec start ./ --disable-docker="true" -o="json" -O="./horusec.json"
+                                        horusec start -p ./ --disable-docker="true" -o="json" -O="./horusec.json"
                                     '''
 
                                 } catch (err){
