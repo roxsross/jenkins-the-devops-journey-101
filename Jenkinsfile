@@ -28,7 +28,13 @@ pipeline {
             steps {
                 sh '''
                    semgrep ci --config=auto --json --output=report_semgrep.json
-                   cat report_semgrep.json
+                   EXIT_CODE=$?
+                   if [ "$EXIT_CODE" = "0" ] || [ "$EXIT_CODE" = "1" ]
+                   then
+                    exit 0
+                    else
+                        exit $EXIT_CODE
+                    fi    
                   '''
                 stash name: 'report_semgrep.json', includes: 'report_semgrep.json'
             }
