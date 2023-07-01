@@ -26,6 +26,7 @@ pipeline {
                 }
             }
             steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                 sh '''
                    semgrep ci --config=auto --json --output=report_semgrep.json
                    EXIT_CODE=$?
@@ -36,6 +37,7 @@ pipeline {
                         exit $EXIT_CODE
                     fi    
                   '''
+                }
                 stash name: 'report_semgrep.json', includes: 'report_semgrep.json'
             }
         } 
