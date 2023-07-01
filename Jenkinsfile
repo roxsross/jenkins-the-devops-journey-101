@@ -53,25 +53,16 @@ pipeline {
                  '''
             }
         }
-        // stage ('Upload Faraday') {
-        //     agent {
-        //         docker {
-        //             image 'python:3.9.1'
-        //             args '-u root:root -v $WORKSPACE:/reports'
-        //         }
-        //     }
-        //     steps {
-        //         dir ("reports"){
-        //             unstash 'report_trivy.json'
-        //             sh '''
-        //                 pip install -q faraday-cli
-        //                 faraday-cli auth -f http://52.23.160.18:5985 -u faraday -p "Admin1234"
-        //                 faraday-cli workspace create devsecops-$BUILD_NUMBER
-        //                 faraday-cli tool report -w devsecops-$BUILD_NUMBER report_trivy.json
-        //             '''
-        //         }
-
-        //     }
-        // }     
+         stage('deploy') {
+            steps {
+                echo "deploy"
+            }
+        } 
+        stage('DAST-ZAP') {
+            steps {
+                sh 'docker run --rm -v $(pwd):/zap/wrk/:rw --user root -t owasp/zap2docker-weekly zap-baseline.py -t https://petstore3.swagger.io -m 1 -d -I --r testreport.html'
+                stash name: 'testreport.html', includes: 'testreport.html'
+            }
+        }          
     } //end stages
 }//end pipeline
