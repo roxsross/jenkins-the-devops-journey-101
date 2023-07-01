@@ -14,7 +14,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'horusec start -p ./ -o="json" -O="./report_horusec.json"'
+                sh 'horusec start -p ./ --disable-docker="true" -o="json" -O="./report_horusec.json"'
                 sh 'cat report_horusec.json'
             }
         } 
