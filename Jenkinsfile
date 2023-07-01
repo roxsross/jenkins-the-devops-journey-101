@@ -23,6 +23,7 @@ pipeline {
                   docker build -t $IMAGE .
                   curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b . v0.42.1
                   ./trivy image --format json --output report_trivy.json $IMAGE
+                  ./script/trivy_scan.sh
                  '''
                  stash name: 'report_trivy.json', includes: 'report_trivy.json', useDefaultExcludes: false
             }

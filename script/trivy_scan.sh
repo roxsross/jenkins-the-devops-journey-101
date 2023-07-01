@@ -1,18 +1,20 @@
 #!/bin/bash
+TRIVY_REPORT=report_trivy.json
+ALLOW_DEPLOY=2
+ALLOW_FAILURE=true
+######
+NUM_CRITICAL=$(grep CRITICAL $TRIVY_REPORT | wc -l)
+NUM_HIGH=$(grep HIGH $TRIVY_REPORT | wc -l)
+NUM_MEDIUM=$(grep MEDIUM $TRIVY_REPORT | wc -l)
+NUM_LOW=$(grep LOW $TRIVY_REPORT | wc -l)
+BASE=$(cat $TRIVY_REPORT | jq '.Metadata.OS | "\(.Family):\(.Name)"' | sed 's/"//g')
+echo " $IMAGE | $BASE | $NUM_CRITICAL | $NUM_HIGH | $NUM_MEDIUM | $NUM_LOW " 
 
-TRIVY_REPORT=result_trivy.json
-ALLOW=2
-
-NUM_CRITICAL=$(grep CRITICAL $TRIVY_REPORT | wc -l )
-NUM_HIGH=$(grep HIGH $TRIVY_REPORT | wc -l )
-
-echo "$NUM_CRITICAL | $NUM_HIGH"
-
-if [ $NUM_CRITICAL -ge $ALLOW ]; then
-    echo "DENY TO PRODUCTION"
-    echo "TOTAL Vulnerabilities Critical: $NUM_CRITICAL"
-    echo "TOTAL Vulnerabilities High: $NUM_HIGH"
-    exit 1
+if [ $NUM_CRITICAL -ge $ALLOW_DEPLOY ]; then
+      echo "DENY DEPLOY TO PRODUCCION"
+      echo "Total Vulnerabilities Critical: $NUM_CRITICAL"
+      echo "Total Vulnerabilities High: $NUM_HIGH"
+      exit 1
 else
-    echo "ALLOW TO PRODUCTION"    
-fi    
+       echo "ALLOW DEPLOY TO PRODUCCION"        
+fi 
