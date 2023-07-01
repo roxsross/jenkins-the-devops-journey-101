@@ -6,9 +6,16 @@ pipeline {
         DOCKER_HUB_LOGIN = credentials('docker-hub')
             }
     stages {
-        stage('init') {
+        stage('horusec') {
+            agent {
+                docker {
+                    image 'horuszup/horusec-cli:latest'
+                    args '-u root:root'
+                }
+            }
             steps {
-                echo "init"
+                sh 'horusec start -p ./ -o="json" -O="./report_horusec.json"'
+                sh 'cat report_horusec.json'
             }
         } 
         stage('test') {
@@ -22,7 +29,7 @@ pipeline {
                   IMAGE=trivy
                   docker build -t $IMAGE .
                   curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b . v0.42.1
-                  ./trivy image --format json --output report_trivy.json python:3.4-alpine 
+                  ./trivy image --format json --output report_trivy.json $IMAGE
                  docker run --rm -v $(pwd):/devsecops-pipeline -e "HOST=http://52.23.160.18:5985" -e "USERNAME=faraday" -e "PASSWORD=Admin1234" -e "WORKSPACE=devsecops-$BUILD_NUMBER" -e FILES="devsecops-pipeline/report_trivy.json" roxsross12/faraday-uploader:1.0.0  
                   ./script/trivy_scan.sh
                  '''
