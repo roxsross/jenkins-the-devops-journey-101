@@ -15,14 +15,24 @@ pipeline {
             }
             steps {
                 sh 'horusec start -p ./ --disable-docker="true" -o="json" -O="./report_horusec.json"'
-                sh 'cat report_horusec.json'
+                stash name: 'report_horusec.json', includes: 'report_horusec.json'
             }
         } 
-        stage('test') {
-            steps {
-                echo "test"
+        stage('semgrep') {
+            agent {
+                docker {
+                    image 'returntocorp/semgrep:latest'
+                    args '-u root:root'
+                }
             }
-        }
+            steps {
+                sh '''
+                   semgrep ci --config=auto --json --output=report_semgrep.json
+                   cat report_semgrep.json
+                  '''
+                stash name: 'report_semgrep.json', includes: 'report_semgrep.json'
+            }
+        } 
         stage('Trivy Scan') {
             steps {
                 sh '''
