@@ -1,0 +1,19 @@
+pipeline {
+    agent none
+    stages {
+        stage('security_sast') {
+            parallel {
+                stage('horusec') {
+                    steps {
+                       echo "hola"
+                    }
+                }
+                stage('Semgrep') {
+                    steps {
+                       echo "hola"
+                    }
+                }
+            } //end parells
+        } 
+    }
+}
