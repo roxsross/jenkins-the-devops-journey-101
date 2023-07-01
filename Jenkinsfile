@@ -60,7 +60,7 @@ pipeline {
         } 
         stage('DAST-ZAP') {
             steps {
-                sh 'docker run --rm -v $(pwd):/zap/wrk/:rw --user root -t owasp/zap2docker-weekly zap-baseline.py -t https://petstore3.swagger.io -m 1 -d -I --r testreport.html'
+                sh 'docker run --rm -v $(pwd):/zap/wrk/:rw --user root -t owasp/zap2docker-weekly zap-baseline.py -t https://petstore3.swagger.io -m 1 -d -I -r testreport.html'
                 stash name: 'testreport.html', includes: 'testreport.html'
             }
         }          
