@@ -1,9 +1,6 @@
 pipeline {
     agent any
     environment {
-        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
-        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
-        //AWS_SESSION_TOKEN = credentials('AWS_SESSION_TOKEN')
         BUCKET = "front.bucket.295devops.io"
             }
     stages {
@@ -43,8 +40,10 @@ pipeline {
         }  
         stage('Deploy to s3') {
             steps {
+              withAWS(region: 'us-east-1',credentials:'aws-roxsross'){
                 unstash 'dist'
                 sh 'aws s3 sync dist/. s3://$BUCKET --exclude ".git/*"'
+              }
             }
         }
     } //end stages
