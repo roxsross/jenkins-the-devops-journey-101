@@ -1,0 +1,19 @@
+{
+    "environments":{
+        "101-angular-web":{    
+            "s3bucketname":"front.bucket.295devops.io",
+            "TARGET_AWS_ACCOUNT":"",
+            "TARGET_REGION" :"us-east-1",
+            "APP_ID":"",
+            "AMPLIFY_BRANCH_NAME" :"develop"
+        },
+
+        "origin/101-angular-web":{    
+            "s3bucketname":"front.bucket.295devops.io",
+            "TARGET_AWS_ACCOUNT":"",
+            "TARGET_REGION" :"us-east-1",
+            "APP_ID":"",
+            "AMPLIFY_BRANCH_NAME" :"master"
+        }    
+    }   
+}

@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "1.0.8",
+  "version": "1.0.1",
   "author": "RoxsRoss",
   "scripts": {
     "ng": "ng",

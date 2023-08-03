@@ -85,9 +85,6 @@ pipeline {
         }
                    
     stage('Notifications') {
-            when {
-                branch 'master'
-            }
             steps {
                 sh './automation/notification.sh'
             }
