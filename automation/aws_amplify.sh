@@ -43,6 +43,9 @@ case "$1" in
   'uploads3')
     uploads3 ;;  
 
+  'deploys3')
+    deploys3 ;;  
+    
   'deploy')
     deploy ;;
     *)
