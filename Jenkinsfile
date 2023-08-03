@@ -4,28 +4,65 @@ pipeline {
         BUCKET = "front.bucket.295devops.io"
             }
     stages {
-        stage('Init') {
-            agent {
-                docker {
-                    image 'node:erbium-alpine'
-                    args '-u root:root'
+        stage('Install dependencies ') {
+            parallel {
+                stage('Init') {
+                agent {
+                    docker {
+                        image 'node:fermium-alpine'
+                        args '-u root:root'
+                    }           
+                 }
+                    steps {
+                        sh 'npm install'
+                    }
                 }
-            }
-            steps {
-                sh 'npm install'
-            }
-        } 
-        stage('test') {
-            agent {
-                docker {
-                    image 'roxsross12/node-chrome'
-                    args '-u root:root'
+                stage('Test') {
+                agent {
+                    docker {
+                        image 'node:fermium-alpine'
+                        args '-u root:root'
+                    }           
+                 }
+                    steps {
+                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                        sh 'npm run test'
+                        }
+                    }
                 }
-            }
-            steps {
-                sh 'npm run test'
-            }
+            } // end parallel
         }
+        stage('sast') {
+            parallel {
+                stage('Secrets-Gitleaks') {
+                    steps {
+                        script {
+                            def result = sh label: "Secrets", returnStatus: true,
+                                script: """\
+                                    ./automation/security.sh secrets
+                            """
+                            if (result > 0) {
+                                unstable(message: "Secrets issues found")
+                            }   
+                            }
+                        }
+                    }
+            stage('audit') {
+                agent {
+                    docker {
+                        image 'node:fermium-alpine'
+                        args '-u root:root'
+                    }           
+                 }
+                    steps {
+                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                            sh 'npm audit --registry=https://registry.npmjs.org -audit-level=critical --json > report_npmaudit.json'
+                            stash name: 'report_npmaudit.json', includes: 'report_npmaudit.json'
+                        } 
+                    }
+                }
+        }
+    }
         stage('Build') {
             agent {
                 docker {
@@ -44,6 +81,15 @@ pipeline {
                 unstash 'dist'
                 sh 'aws s3 sync dist/. s3://$BUCKET --exclude ".git/*"'
               }
+            }
+        }
+                   
+    stage('Notifications') {
+            when {
+                branch 'master'
+            }
+            steps {
+                sh './automation/notification.sh'
             }
         }
     } //end stages
