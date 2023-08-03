@@ -81,7 +81,7 @@ pipeline {
             steps {
               withAWS(region: "${TARGET_REGION}",credentials:'aws-roxsross'){
                 unstash 'dist'
-                sh './automation/aws_amplify.sh uploads3'
+                sh './automation/aws_amplify.sh deploys3'
               }
             }
         }
