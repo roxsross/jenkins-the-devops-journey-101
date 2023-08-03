@@ -10,14 +10,14 @@ uploads3() {
     # CREATE BUCKET IF NOT EXISTS
     aws s3 mb s3://$s3bucketname --region us-east-1
     #cp to s3
-    aws s3 sync dist/. s3://$s3bucketname --exclude ".git/*"
+    aws s3 cp dist.zip s3://$s3bucketname
 }
 
 deploys3() {
     # CREATE BUCKET IF NOT EXISTS
     aws s3 mb s3://$s3bucketname --region us-east-1
-    #cp to s3
-    aws s3 cp dist.zip s3://$s3bucketname
+
+     aws s3 sync dist/. s3://$s3bucketname --exclude ".git/*"
 }
 
 deploy () {
