@@ -2,6 +2,8 @@ pipeline {
     agent any
     environment {
         BUCKET = "front.bucket.295devops.io"
+        TARGET_REGION = "us-east-1"
+        BOT_URL = credentials('telegram')
             }
     stages {
         stage('Install dependencies ') {
@@ -77,9 +79,9 @@ pipeline {
         }  
         stage('Deploy to s3') {
             steps {
-              withAWS(region: 'us-east-1',credentials:'aws-roxsross'){
+              withAWS(region: "${TARGET_REGION}",credentials:'aws-roxsross'){
                 unstash 'dist'
-                sh 'aws s3 sync dist/. s3://$BUCKET --exclude ".git/*"'
+                sh './automation/aws_amplify.sh uploads3'
               }
             }
         }
